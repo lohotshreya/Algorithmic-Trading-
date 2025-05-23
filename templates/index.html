@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algo Trading Backtester</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark Theme Colors */
+            --bg-color: #1a1a2e; /* Dark Blue/Purple */
+            --form-bg: #21213b; /* Slightly lighter dark */
+            --text-color: #e0e0e0; /* Light grey for text */
+            --primary-color: #00bcd4; /* Cyan/Turquoise for accents */
+            --secondary-color: #ffeb3b; /* Yellow for highlights */
+            --border-color: #3b3b5c; /* Darker border */
+            --button-hover-color: #0097a7; /* Darker cyan on hover */
+            --error-bg: #ff6e6e; /* Red for errors */
+            --error-text: #330000;
+            --box-shadow: rgba(0, 0, 0, 0.4);
+            --input-bg: #2a2a47;
+            --input-text: #ffffff;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace; /* Monospaced for code/data feel */
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif; /* Professional, strong font for title */
+            color: var(--primary-color);
+            text-shadow: 0 0 8px rgba(0, 188, 212, 0.6), 0 0 15px rgba(0, 188, 212, 0.3); /* Softer glow */
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            letter-spacing: 2px; /* Add some spacing for a modern look */
+            text-transform: uppercase; /* Make it all caps */
+        }
+
+        h2, h3 {
+            font-family: 'Montserrat', sans-serif; /* Consistent with h1 */
+            color: var(--primary-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        form {
+            background-color: var(--form-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: calc(100% - 20px); /* Account for padding */
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(0, 188, 212, 0.5); /* Glowing effect */
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--form-bg); /* Dark text on light button */
+            padding: 14px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
+        }
+
+        .error-message {
+            color: var(--error-text);
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-text);
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px rgba(255, 110, 110, 0.5);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .results-section {
+            margin-top: 40px;
+            background-color: var(--form-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px var(--box-shadow);
+            text-align: left;
+            max-width: 800px; /* Limit width for readability */
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+        }
+
+        .results-section h2, .results-section h3 {
+            text-align: center;
+            color: var(--secondary-color); /* Use secondary color for result titles */
+            text-shadow: 0 0 5px rgba(255, 235, 59, 0.5);
+        }
+
+        .results-section ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: center; /* Center metrics */
+        }
+
+        .results-section li {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: var(--text-color);
+        }
+        .results-section li strong {
+            color: var(--primary-color);
+        }
+
+        .results-section img {
+            width: 100%;
+            max-width: 700px; /* Adjust as needed */
+            height: auto;
+            display: block;
+            margin: 30px auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px var(--box-shadow);
+            border-radius: 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            form, .results-section {
+                padding: 20px;
+            }
+            input[type="text"],
+            input[type="number"],
+            input[type="date"] {
+                width: 100%;
+            }
+            button {
+                font-size: 1.1em;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body style="text-align: center;">
+    <h1>Algorithmic Trading Backtester</h1>
+
+    <form method="post">
+        <label for="ticker">Ticker (e.g. AAPL):</label>
+        <input type="text" id="ticker" name="ticker" required value="{{ ticker or 'AAPL' }}"><br>
+
+        <label for="short_ma">Short MA Window:</label>
+        <input type="number" id="short_ma" name="short_ma" value="{{ short_ma or '20' }}"><br>
+
+        <label for="long_ma">Long MA Window:</label>
+        <input type="number" id="long_ma" name="long_ma" value="{{ long_ma or '50' }}"><br>
+
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date or '2020-01-01' }}"><br>
+
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date or '2023-01-01' }}"><br>
+
+        <button type="submit">Run Backtest</button>
+    </form>
+
+    {% if error %}
+        <p class="error-message">⚠️ {{ error }}</p>
+    {% endif %}
+
+    {% if metrics %}
+        <div class="results-section">
+            <h2>Backtest Results for {{ request.form.ticker | default(ticker) }}</h2>
+            <h3>Performance Metrics:</h3>
+            <ul>
+                <li><strong>Total Return:</strong> {{ metrics.total_return }}</li>
+                <li><strong>Sharpe Ratio:</strong> {{ metrics.sharpe_ratio }}</li>
+                <li><strong>Max Drawdown:</strong> {{ metrics.max_drawdown }}</li>
+            </ul>
+
+            <h3>Cumulative Strategy vs. Market Returns</h3>
+            {% if cumulative_chart_file %}
+                <img src="{{ url_for('static', filename=cumulative_chart_file) }}" alt="Cumulative Returns Chart">
+            {% endif %}
+
+            <h3>Price, Moving Averages, and Trade Signals</h3>
+            {% if price_chart_file %}
+                <img src="{{ url_for('static', filename=price_chart_file) }}" alt="Price, MAs, and Signals Chart">
+            {% endif %}
+        </div>
+    {% endif %}
+</body>
+</html>
